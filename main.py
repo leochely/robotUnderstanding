@@ -1,11 +1,16 @@
 import os
 import numpy as np
 
-train_dir = './dataset/train'
-test_dir = './dataset/test'
+train_dir = './dataset/train/'
+test_dir = './dataset/test/'
 
 training_file = 'rad_d1'
 test_file = 'rad_d1.t'
+
+M = 20
+N = 10
+
+star_joints = [0, 3, 7, 11, 15, 19]
 
 
 def divide_chunks(l, n):
@@ -25,45 +30,45 @@ def angle_finder(a, b, c):
     return np.arccos(cosine_angle)
 
 
-# for filename in os.listdir(train_dir):
-with open('./dataset/train/a08_s01_e01_skeleton_proj.txt') as file:
-    lines = file.readlines()
+for filename in os.listdir(train_dir):
+    print('Starting instance {}'.format(filename))
+    with open(train_dir + filename) as file:
+        lines = file.readlines()
+        frames = list(divide_chunks(lines, 20))
 
-    frames = list(divide_chunks(lines, 20))
+        T = 0
+        distances = []
+        angles = []
 
-    distances = []
-    angles = []
+        # Initializes distance and angle lists for the instance
+        for i in range(5):
+            distances.append([])
+            angles.append([])
 
-    for frame in frames:
-        #frame[1, 4, 8, 12, 16, 20]
-        hip_pos = np.array([float(number)
-                            for number in frame[0].split()][2:])
-        head_pos = np.array([float(number)
-                             for number in frame[3].split()][2:])
-        left_hand_pos = np.array([float(number)
-                                  for number in frame[7].split()][2:])
-        right_hand_pos = np.array([float(number)
-                                   for number in frame[11].split()][2:])
-        left_foot_pos = np.array([float(number)
-                                  for number in frame[15].split()][2:])
-        right_foot_pos = np.array([float(number)
-                                   for number in frame[19].split()][2:])
+        for frame in frames:
+            T += 1
+            pos = []
+            for joint in star_joints:
+                # Find positions of joints
+                pos.append(np.array([float(number)
+                                     for number in frame[joint].split()][2:]))
 
-        d = {}
-        d['head to hip'] = distance_finder(hip_pos, head_pos)
-        d['l hand to hip'] = distance_finder(hip_pos, left_hand_pos)
-        d['r hand to hip'] = distance_finder(hip_pos, right_hand_pos)
-        d['l foot to hip'] = distance_finder(hip_pos, left_foot_pos)
-        d['r foot to hip'] = distance_finder(hip_pos, right_foot_pos)
+            # Computes distances and angles
+            for i in range(5):
+                distances[i].append(distance_finder(pos[0], pos[i]))
+                angles[i].append(angle_finder(
+                    pos[i + 1], pos[0], pos[(i + 2) % 5 + 1]))
 
-        a = {}
-        a['lhand_hip_head'] = angle_finder(
-            left_hand_pos, hip_pos, head_pos)
-        a['head_hip_rhand'] = angle_finder(
-            head_pos, hip_pos, right_hand_pos)
-        a['rhand_hip_rfoot'] = angle_finder(
-            right_hand_pos, hip_pos, right_foot_pos)
-        a['rfoot_hip_lfoot'] = angle_finder(
-            right_foot_pos, hip_pos, left_foot_pos)
-        a['lfoot_hip_lhand'] = angle_finder(
-            left_foot_pos, hip_pos, left_hand_pos)
+        distance_hist = []
+        angle_hist = []
+
+        # Creates normalized histograms for the instance
+        try:
+            for i in range(5):
+                distance_hist.append(np.histogram(
+                    distances[i], bins=M, density=True))
+                angle_hist.append(np.histogram(
+                    angles[i], bins=N, density=True))
+        except Exception:
+            print('Skipped frame {} from file {}'.format(T, filename))
+            pass
