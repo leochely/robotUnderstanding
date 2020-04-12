@@ -11,6 +11,7 @@ M = 10
 N = 8
 
 star_joints = [0, 3, 7, 11, 15, 19]
+custom_joints = [0, 5, 7, 9, 11, 19]
 
 
 def divide_chunks(l, n):
@@ -30,7 +31,7 @@ def angle_finder(a, b, c):
     return np.arccos(cosine_angle)
 
 
-def vectors_generator(output_file_name, folder_name, joints):
+def generate_file(output_file_name, folder_name, joints):
     with open(output_file_name, 'w') as output_file:
         for filename in os.listdir(folder_name):
             output_file.write(filename + ' ')
@@ -82,5 +83,7 @@ def vectors_generator(output_file_name, folder_name, joints):
                 output_file.write('\n')
 
 
-vectors_generator('rad_d1', train_dir, star_joints)
-vectors_generator('rad_d1.t', test_dir, star_joints)
+generate_file('rad_d1', train_dir, star_joints)
+generate_file('rad_d1.t', test_dir, star_joints)
+generate_file('cust_d1', train_dir, custom_joints)
+generate_file('cust_d1.t', test_dir, custom_joints)
