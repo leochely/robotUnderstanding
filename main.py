@@ -7,10 +7,10 @@ test_dir = './dataset/test/'
 training_file = 'rad_d1'
 test_file = 'rad_d1.t'
 
-M = 10
 N = 8
+M = 10
 
-star_joints = [0, 3, 7, 11, 15, 19]
+star_joints = [0, 3, 11, 19, 15, 7]
 custom_joints = [0, 5, 7, 9, 11, 19]
 
 
@@ -66,8 +66,8 @@ def generate_file(output_file_name, folder_name, joints):
                 # Creates normalized histograms for the instance
                 try:
                     for i in range(len(star_joints) - 1):
-                        d = np.histogram(distances[i], bins=M, density=True)
-                        a = np.histogram(angles[i], bins=N, density=True)
+                        d = np.histogram(distances[i], bins=N, density=True)
+                        a = np.histogram(angles[i], bins=M, density=True)
 
                         # Outputs to file
                         for j in range(len(d[0])):
