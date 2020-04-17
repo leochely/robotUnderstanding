@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from libsvm.svmutil import *
 
 train_dir = './dataset/train/'
 test_dir = './dataset/test/'
@@ -7,8 +8,8 @@ test_dir = './dataset/test/'
 training_file = 'rad_d1'
 test_file = 'rad_d1.t'
 
-N = 8
-M = 10
+N = 15
+M = 20
 
 star_joints = [0, 3, 11, 19, 15, 7]
 custom_joints = [0, 5, 7, 9, 11, 19]
@@ -83,7 +84,31 @@ def generate_file(output_file_name, folder_name, joints):
                 output_file.write('\n')
 
 
-generate_file('rad_d1', train_dir, star_joints)
-generate_file('rad_d1.t', test_dir, star_joints)
-generate_file('cust_d1', train_dir, custom_joints)
-generate_file('cust_d1.t', test_dir, custom_joints)
+def convert_to_libsvm_format(input_file, output_file):
+    with open(output_file, 'w') as output:
+        with open(input_file, 'r') as input:
+            lines = input.readlines()
+            for line in lines:
+                split = line.split()
+                output.write('{} '.format(int(split[0][1:3])))
+                values = split[2::2]
+                i = 0
+                for value in values:
+                    output.write('{}:{} '.format(i, value))
+                    i += 1
+                output.write('\n')
+
+
+def learn_and_predict(train, test):
+    prob = svm_read_problem(train)
+    prob_test = svm_read_problem(test)
+    param = svm_parameter(kernel_type=RBF, C=10)
+    m = svm_model(prob, param)
+
+    # generate_file('rad_d1', train_dir, star_joints)
+    # generate_file('rad_d1.t', test_dir, star_joints)
+    # generate_file('cust_d1', train_dir, custom_joints)
+    # generate_file('cust_d1.t', test_dir, custom_joints)
+
+
+convert_to_libsvm_format('rad_d1', 'rad_d2')
