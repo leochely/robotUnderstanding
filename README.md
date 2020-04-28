@@ -13,5 +13,5 @@ Histograms are generated using numpy.histogram function. I used N = 15 bins for 
 
 ### Model Training and Predictions
 Optimal values for:
-* RAD: C = 2 and γ = 0.0001220703125
-* Custom: C = 128 and γ = 0.0001220703125
+* RAD: C = 2 and γ = 0.0001220703125 (grip.py output in rad_d2.png)
+* Custom: C = 128 and γ = 0.0001220703125 (grip.py output in cust_d2.png)
