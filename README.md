@@ -12,6 +12,7 @@ Joints used are 1 (hip), 6 (elbow left), 8 (left hand), 10 (right elbow), 14 (le
 Histograms are generated using numpy.histogram function. I used N = 15 bins for the d<sub>i</sub> bins and M = 20 bins for the θ<sub>i</sub>.
 
 ### Model Training and Predictions
+In order to run the code, make sure you first install the dependencies: `pip install -r requirements.txt`
 Optimal values for:
 * RAD: C = 2 and γ = 0.0001220703125 (grip.py output in rad_d2.png)
 * Custom: C = 128 and γ = 0.0001220703125 (grip.py output in cust_d2.png)
