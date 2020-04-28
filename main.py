@@ -113,10 +113,10 @@ def test_results(test_file, model):
     y_pred, _, _ = svm_predict(y, x, model)
     print(confusion_matrix(y, y_pred))
 
-# generate_file('rad_d1', train_dir, star_joints)
-# generate_file('rad_d1.t', test_dir, star_joints)
-# generate_file('cust_d1', train_dir, custom_joints)
-# generate_file('cust_d1.t', test_dir, custom_joints)
+generate_file('rad_d1', train_dir, star_joints)
+generate_file('rad_d1.t', test_dir, star_joints)
+generate_file('cust_d1', train_dir, custom_joints)
+generate_file('cust_d1.t', test_dir, custom_joints)
 
 # HRD
 convert_to_libsvm_format('rad_d1', 'rad_d2')
