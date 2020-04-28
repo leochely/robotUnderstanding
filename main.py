@@ -1,6 +1,7 @@
-import os
+import os, sys
 import numpy as np
 from libsvm.svmutil import *
+from sklearn.metrics import confusion_matrix
 
 train_dir = './dataset/train/'
 test_dir = './dataset/test/'
@@ -99,16 +100,34 @@ def convert_to_libsvm_format(input_file, output_file):
                 output.write('\n')
 
 
-def learn_and_predict(train, test):
-    prob = svm_read_problem(train)
-    prob_test = svm_read_problem(test)
-    param = svm_parameter(kernel_type=RBF, C=10)
-    m = svm_model(prob, param)
-
-    # generate_file('rad_d1', train_dir, star_joints)
-    # generate_file('rad_d1.t', test_dir, star_joints)
-    # generate_file('cust_d1', train_dir, custom_joints)
-    # generate_file('cust_d1.t', test_dir, custom_joints)
+def read_and_train(input_file, c, g):
+    y, x = svm_read_problem(input_file)
+    prob  = svm_problem(y, x)
+    m = svm_train(y, x, '-c {} -g {}'.format(c, g))
+    return m
 
 
+def test_results(test_file, model):
+    y, x = svm_read_problem(test_file)
+    sys.stdout = open(test_file+'.predict', 'w')
+    y_pred, _, _ = svm_predict(y, x, model)
+    print(confusion_matrix(y, y_pred))
+
+# generate_file('rad_d1', train_dir, star_joints)
+# generate_file('rad_d1.t', test_dir, star_joints)
+# generate_file('cust_d1', train_dir, custom_joints)
+# generate_file('cust_d1.t', test_dir, custom_joints)
+
+# HRD
 convert_to_libsvm_format('rad_d1', 'rad_d2')
+convert_to_libsvm_format('rad_d1.t', 'rad_d2.t')
+
+model_HRD = read_and_train('rad_d2', 2, 0.0001220703125)
+test_results('rad_d2.t', model_HRD)
+
+# Custom
+convert_to_libsvm_format('cust_d1', 'cust_d2')
+convert_to_libsvm_format('cust_d1.t', 'cust_d2.t')
+
+model_custom = read_and_train('cust_d2', 128, 0.0001220703125)
+test_results('cust_d2.t', model_custom)
